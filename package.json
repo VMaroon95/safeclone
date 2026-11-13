@@ -1,0 +1,12 @@
+{
+  "name": "safeclone",
+  "version": "0.1.0",
+  "description": "Scan a repo for hidden prompt-injection payloads before your AI agent reads it. Offline, zero dependencies.",
+  "type": "module",
+  "bin": { "safeclone": "bin/safeclone.js" },
+  "files": ["bin", "src"],
+  "scripts": { "test": "node --test test/*.test.js" },
+  "engines": { "node": ">=18" },
+  "keywords": ["security", "prompt-injection", "ai-agents", "supply-chain", "claude-code", "cursor"],
+  "license": "MIT"
+}
