@@ -41,6 +41,8 @@ npm install -g github:VMaroon95/safeclone
 | `bidi-override` (high) | Trojan Source: right-to-left overrides that make code read differently than it runs |
 | `zero-width` (medium; high in agent files) | Zero-width / invisible characters |
 | `hidden-comment-injection` (high) | `<!-- AI agents: ignore previous instructions … -->` in a README |
+| `unterminated-comment` (medium) | An HTML comment that is never closed, hiding everything after it when rendered |
+| `obfuscated-injection` (high) | An injection phrase disguised with look-alike letters, invisible characters or spacing |
 | `hidden-html` (medium) | Text hidden with `display:none`, `font-size:0`, the `hidden` attribute |
 | `injection-phrase` (medium; high in `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, skills…) | "ignore previous instructions", "don't tell the user", `curl … \| sh`, "send the .env", "disable safety" |
 | `install-script` / `auto-run-task` / `devcontainer-command` | `postinstall` scripts, VS Code `folderOpen` tasks, devcontainer commands |
@@ -53,12 +55,13 @@ Exit code 1 when anything at or above `--fail-on` (default `high`) is found, so 
 
 - **Safe clone:** `git clone` with hooks off (`core.hooksPath=/dev/null`), no submodules, `ext::`/`file:` protocols blocked, symlinks not checked out, and only `https://`, `ssh://` and scp-style (`git@host:path`) URLs accepted. Option-looking URLs (`--upload-pack=…`) are rejected.
 - **Escaped output:** the report itself is escaped, so hidden characters in a repo can't reach your terminal or an agent that reads the report.
-- **Linear-time scanning:** tested against inputs built to cause regex backtracking. Files over 2 MB, binaries, `.git`, `node_modules` and similar build/vendor folders are skipped, and at most 20,000 files are scanned; symlinks are reported, never followed.
+- **Linear-time scanning:** tested against inputs built to cause regex backtracking. Binaries and `.git` are skipped. Build and vendor folders (`node_modules`, `dist`, `build`, `target`, venvs) are skipped except for agent instruction and config files inside them, which agents still load. Files over 2 MB are skipped (agent instruction files are flagged high and their first 2 MB is scanned), at most 20,000 files are scanned, UTF-16 files are decoded, and symlinks are reported, never followed.
+- **Evasion handling:** injection phrases are also matched after removing invisible characters, folding full-width forms, mapping Cyrillic/Greek look-alikes to Latin and joining spaced-out letters (`obfuscated-injection`, high). Zero-width joiners inside emoji sequences and a leading BOM are not flagged.
 - **No network** except the clone you asked for. No telemetry.
 
 ## Limits
 
-Heuristics find known tricks; they cannot prove a repo is safe. A clean report means "nothing matched", not "trustworthy". Phrases are matched in English. Binary files and code logic are not analysed.
+Heuristics find known tricks; they cannot prove a repo is safe. A clean report means "nothing matched", not "trustworthy". Phrases are matched in English, and a determined attacker can paraphrase around them (translation, synonyms, instructions split across files). Binary files and code logic are not analysed.
 
 ## Related
 

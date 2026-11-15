@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 
 // Only network transports. Blocks ext::, fd::, file:// and option-looking values (argument injection).
-const URL_OK = /^(https:\/\/[\w.-]+(:\d+)?\/[\w./~%+-]+|ssh:\/\/[\w.@-]+(:\d+)?\/[\w./~%+-]+|[\w.-]+@[\w.-]+:[\w./~%+-]+)$/;
+const URL_OK = /^(https:\/\/[A-Za-z0-9][\w.-]*(:\d+)?\/[\w.\/~%+-]+|ssh:\/\/([A-Za-z0-9][\w.-]*@)?[A-Za-z0-9][\w.-]*(:\d+)?\/[\w.\/~%+-]+|[A-Za-z0-9][\w.-]*@[A-Za-z0-9][\w.-]*:[\w.\/~%+-]+)$/;
 
 export function validateUrl(url, { allowLocal = false } = {}) {
   if (typeof url !== "string" || !url || url.startsWith("-")) throw new Error("invalid repository URL");
